@@ -1,0 +1,144 @@
+{
+  "schema_version": 1,
+  "name": "Android Performance Ecosystem",
+  "public_url": "https://github.com/Gracker/android-performance-ecosystem",
+  "official_affiliation": false,
+  "projects": [
+    {
+      "id": "tracefix",
+      "name": "TraceFix",
+      "stage": {
+        "en": "Instrument",
+        "zh-CN": "插桩"
+      },
+      "role": {
+        "en": "Inject app-side android.os.Trace sections at build time so method work is visible at runtime.",
+        "zh-CN": "在编译期注入 App 侧 android.os.Trace section，让方法执行在运行时 Trace 中可见。"
+      },
+      "public_url": "https://github.com/Gracker/TraceFix",
+      "site_url": null,
+      "availability": "public",
+      "default_branch": "master",
+      "readmes": [
+        { "path": "README.md", "language": "en" },
+        { "path": "README_zh.md", "language": "zh-CN" }
+      ]
+    },
+    {
+      "id": "perfetto-tools",
+      "name": "Perfetto Tools",
+      "stage": {
+        "en": "Capture and measure",
+        "zh-CN": "采集与测量"
+      },
+      "role": {
+        "en": "Capture repeatable Perfetto traces and collect FPS or Simpleperf measurements.",
+        "zh-CN": "抓取可复现的 Perfetto Trace，并采集 FPS 或 Simpleperf 测量结果。"
+      },
+      "public_url": "https://github.com/Gracker/perfetto-tools",
+      "site_url": null,
+      "availability": "public",
+      "default_branch": "main",
+      "readmes": [
+        { "path": "README.md", "language": "en" }
+      ]
+    },
+    {
+      "id": "smartperfetto",
+      "name": "SmartPerfetto",
+      "stage": {
+        "en": "Analyze",
+        "zh-CN": "分析"
+      },
+      "role": {
+        "en": "Investigate traces with an AI-assisted Web UI, CLI, reports, sessions, comparisons, and evidence workflow.",
+        "zh-CN": "通过 AI 辅助 Web UI、CLI、报告、会话、对比和证据工作流分析 Trace。"
+      },
+      "public_url": "https://github.com/Gracker/SmartPerfetto",
+      "site_url": null,
+      "availability": "public",
+      "default_branch": "main",
+      "readmes": [
+        { "path": "README.md", "language": "en" },
+        { "path": "README.zh-CN.md", "language": "zh-CN" }
+      ]
+    },
+    {
+      "id": "perfetto-skills",
+      "name": "Perfetto Skills",
+      "stage": {
+        "en": "Agent analysis",
+        "zh-CN": "Agent 分析"
+      },
+      "role": {
+        "en": "Give agents a portable Perfetto analysis Skill for Android, Linux, and Chromium, with selected assets synchronized through pinned workflows.",
+        "zh-CN": "为 Agent 提供可移植的 Android、Linux、Chromium Perfetto 分析 Skill，并通过固定版本流程同步选定资产。"
+      },
+      "public_url": "https://github.com/Gracker/Perfetto-Skills",
+      "site_url": null,
+      "availability": "public",
+      "default_branch": "main",
+      "readmes": [
+        { "path": "README.md", "language": "en" },
+        { "path": "README.zh-CN.md", "language": "zh-CN" }
+      ]
+    },
+    {
+      "id": "android-performance-blog",
+      "name": "Android Performance Blog",
+      "stage": {
+        "en": "Learn",
+        "zh-CN": "学习"
+      },
+      "role": {
+        "en": "Teach Perfetto and Systrace analysis through articles, system explanations, and case studies.",
+        "zh-CN": "通过文章、系统原理和案例复盘讲解 Perfetto 与 Systrace 分析。"
+      },
+      "public_url": "https://github.com/Gracker/Gracker.github.io",
+      "site_url": "https://www.androidperformance.com/",
+      "availability": "public",
+      "default_branch": "master",
+      "readmes": [
+        { "path": "README.md", "language": "en" },
+        { "path": "README.zh-CN.md", "language": "zh-CN" }
+      ]
+    },
+    {
+      "id": "android-internal-wiki",
+      "name": "Android Internal Wiki",
+      "stage": {
+        "en": "System knowledge",
+        "zh-CN": "系统知识"
+      },
+      "role": {
+        "en": "An alpha knowledge base for Android mechanisms from App to Framework, Native, and Kernel.",
+        "zh-CN": "处于 alpha 阶段的 Android 系统知识库，覆盖 App、Framework、Native 与 Kernel 机制。"
+      },
+      "public_url": null,
+      "site_url": null,
+      "availability": "coming_soon",
+      "default_branch": null,
+      "readmes": []
+    },
+    {
+      "id": "trace-for-blog",
+      "name": "Trace for Blog (SystraceForBlog)",
+      "stage": {
+        "en": "Reproduce",
+        "zh-CN": "复现"
+      },
+      "role": {
+        "en": "Provide the Perfetto, Systrace, and related case files used by articles for hands-on reproduction.",
+        "zh-CN": "提供文章使用的 Perfetto、Systrace 及相关案例文件，支持动手复现。"
+      },
+      "public_url": "https://github.com/Gracker/SystraceForBlog",
+      "site_url": null,
+      "availability": "public",
+      "default_branch": "master",
+      "readmes": [
+        { "path": "README.md", "language": "en" },
+        { "path": "README.zh-CN.md", "language": "zh-CN" }
+      ]
+    }
+  ]
+}
