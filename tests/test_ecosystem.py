@@ -28,6 +28,20 @@ class EcosystemTest(unittest.TestCase):
             self.assertIn("| Android Internal Wiki |", snippet)
             self.assertNotIn("[Android Internal Wiki](", snippet)
 
+    def test_blog_uses_its_named_site_as_the_primary_address(self):
+        project = next(
+            item for item in self.catalog["projects"] if item["id"] == "android-performance-blog"
+        )
+        self.assertEqual("AndroidPerformance.com", project["site_label"])
+        for language in ecosystem.LANGUAGES:
+            row = next(
+                line
+                for line in ecosystem.render_snippet(self.catalog, language).splitlines()
+                if "| Android Performance Blog" in line
+                or "| [Android Performance Blog]" in line
+            )
+            self.assertLess(row.index("[AndroidPerformance.com]"), row.index("[GitHub]"))
+
     def test_committed_files_match_catalog(self):
         self.assertEqual([], ecosystem.validate_local_files(self.catalog))
 

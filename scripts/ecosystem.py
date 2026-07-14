@@ -65,6 +65,8 @@ def validate_catalog(catalog: dict[str, Any]) -> list[str]:
 
         availability = project.get("availability")
         public_url = project.get("public_url")
+        site_url = project.get("site_url")
+        site_label = project.get("site_label")
         readmes = project.get("readmes")
         if availability == "public":
             if not isinstance(public_url, str) or not public_url.startswith("https://github.com/"):
@@ -82,8 +84,15 @@ def validate_catalog(catalog: dict[str, Any]) -> list[str]:
                     path = readme.get("path")
                     if not isinstance(path, str) or Path(path).is_absolute() or ".." in Path(path).parts:
                         errors.append(f"{prefix}.readmes has an unsafe path")
+            if site_url is not None:
+                if not isinstance(site_url, str) or not site_url.startswith("https://"):
+                    errors.append(f"{prefix}.site_url must be an HTTPS URL")
+                if not isinstance(site_label, str) or not site_label.strip():
+                    errors.append(f"{prefix}.site_label is required when site_url is set")
+            elif site_label is not None:
+                errors.append(f"{prefix}.site_label requires site_url")
         elif availability == "coming_soon":
-            if public_url is not None or project.get("site_url") is not None:
+            if public_url is not None or site_url is not None or site_label is not None:
                 errors.append(f"{prefix} coming-soon project must not expose a URL")
             if project.get("default_branch") is not None or readmes != []:
                 errors.append(f"{prefix} coming-soon project must not expose repository metadata")
@@ -110,7 +119,6 @@ def render_snippet(catalog: dict[str, Any], language: str) -> str:
         headers = ("Stage", "Project", "Purpose", "Address")
         coming_soon = "**Coming soon**"
         github_label = "GitHub"
-        website_label = "Website"
     else:
         heading = "## Android 性能分析生态"
         intro = (
@@ -120,7 +128,6 @@ def render_snippet(catalog: dict[str, Any], language: str) -> str:
         headers = ("阶段", "项目", "作用", "地址")
         coming_soon = "**Coming soon**"
         github_label = "GitHub"
-        website_label = "网站"
 
     lines = [
         MARKER_START,
@@ -136,9 +143,13 @@ def render_snippet(catalog: dict[str, Any], language: str) -> str:
         name = project["name"]
         project_cell = f"[{name}]({url})" if url else name
         if url:
-            address = f"[{github_label}]({url})"
             if project.get("site_url"):
-                address += f" · [{website_label}]({project['site_url']})"
+                address = (
+                    f"[{project['site_label']}]({project['site_url']})"
+                    f" · [{github_label}]({url})"
+                )
+            else:
+                address = f"[{github_label}]({url})"
         else:
             address = coming_soon
         lines.append(
