@@ -2,17 +2,18 @@
 
 [简体中文](README.zh-CN.md)
 
-An independent map of Gracker's Android performance projects. The projects keep
-separate releases and runtime boundaries; this repository documents how they
-fit together and validates the shared public navigation.
+An independent navigation Hub for Gracker's seven Android performance projects.
+The projects keep separate releases and runtime boundaries; this repository
+documents how they fit together and validates the shared public navigation.
 
 <!-- android-performance-ecosystem:start -->
 ## Android performance ecosystem
 
-This repository is one part of the [Android Performance Ecosystem](https://github.com/Gracker/android-performance-ecosystem): an optional path from instrumentation and capture to analysis, system knowledge, and reproducible cases.
+The [Android Performance Ecosystem](https://github.com/Gracker/android-performance-ecosystem) brings its navigation Hub and seven core projects into an optional path from instrumentation and capture to analysis, system knowledge, and reproducible cases.
 
 | Stage | Project | Purpose | Address |
 | --- | --- | --- | --- |
+| Navigate | [Android Performance Ecosystem](https://github.com/Gracker/android-performance-ecosystem) | Maintain the shared project map, handoff metadata, generated README navigation, and drift checks. | [GitHub](https://github.com/Gracker/android-performance-ecosystem) |
 | Instrument | [TraceFix](https://github.com/Gracker/TraceFix) | Inject app-side android.os.Trace sections at build time so method work is visible at runtime. | [GitHub](https://github.com/Gracker/TraceFix) |
 | Capture and measure | [Perfetto Tools](https://github.com/Gracker/perfetto-tools) | Capture repeatable Perfetto traces and collect FPS or Simpleperf measurements. | [GitHub](https://github.com/Gracker/perfetto-tools) |
 | Analyze | [SmartPerfetto](https://github.com/Gracker/SmartPerfetto) | Investigate traces with an AI-assisted Web UI, CLI, reports, sessions, comparisons, and evidence workflow. | [GitHub](https://github.com/Gracker/SmartPerfetto) |

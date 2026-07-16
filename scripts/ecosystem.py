@@ -18,6 +18,7 @@ CATALOG_PATH = ROOT / "ecosystem.json"
 MARKER_START = "<!-- android-performance-ecosystem:start -->"
 MARKER_END = "<!-- android-performance-ecosystem:end -->"
 LANGUAGES = {"en", "zh-CN"}
+EXPECTED_HUB_ID = "android-performance-ecosystem"
 EXPECTED_PROJECT_IDS = {
     "tracefix",
     "perfetto-tools",
@@ -33,12 +34,73 @@ def load_catalog(path: Path = CATALOG_PATH) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def validate_localized_fields(entry: dict[str, Any], prefix: str, errors: list[str]) -> None:
+    if not entry.get("name"):
+        errors.append(f"{prefix}.name is required")
+    for field in ("stage", "role"):
+        localized = entry.get(field)
+        if not isinstance(localized, dict) or set(localized) != LANGUAGES:
+            errors.append(f"{prefix}.{field} must contain exactly en and zh-CN")
+
+
+def validate_repository_fields(
+    entry: dict[str, Any], prefix: str, errors: list[str], public_urls: list[str]
+) -> None:
+    availability = entry.get("availability")
+    public_url = entry.get("public_url")
+    site_url = entry.get("site_url")
+    site_label = entry.get("site_label")
+    readmes = entry.get("readmes")
+    if availability == "public":
+        if not isinstance(public_url, str) or not public_url.startswith("https://github.com/"):
+            errors.append(f"{prefix}.public_url must be a GitHub HTTPS URL")
+        else:
+            public_urls.append(public_url)
+        if not entry.get("default_branch"):
+            errors.append(f"{prefix}.default_branch is required for public projects")
+        if not isinstance(readmes, list) or not readmes:
+            errors.append(f"{prefix}.readmes must list public root READMEs")
+        else:
+            for readme in readmes:
+                if readme.get("language") not in LANGUAGES:
+                    errors.append(f"{prefix}.readmes has an unsupported language")
+                path = readme.get("path")
+                if not isinstance(path, str) or Path(path).is_absolute() or ".." in Path(path).parts:
+                    errors.append(f"{prefix}.readmes has an unsafe path")
+        if site_url is not None:
+            if not isinstance(site_url, str) or not site_url.startswith("https://"):
+                errors.append(f"{prefix}.site_url must be an HTTPS URL")
+            if not isinstance(site_label, str) or not site_label.strip():
+                errors.append(f"{prefix}.site_label is required when site_url is set")
+        elif site_label is not None:
+            errors.append(f"{prefix}.site_label requires site_url")
+    elif availability == "coming_soon":
+        if public_url is not None or site_url is not None or site_label is not None:
+            errors.append(f"{prefix} coming-soon project must not expose a URL")
+        if entry.get("default_branch") is not None or readmes != []:
+            errors.append(f"{prefix} coming-soon project must not expose repository metadata")
+    else:
+        errors.append(f"{prefix}.availability must be public or coming_soon")
+
+
 def validate_catalog(catalog: dict[str, Any]) -> list[str]:
     errors: list[str] = []
     if catalog.get("schema_version") != 1:
         errors.append("schema_version must be 1")
     if catalog.get("official_affiliation") is not False:
         errors.append("official_affiliation must remain false")
+
+    public_urls: list[str] = []
+    hub = catalog.get("hub")
+    if not isinstance(hub, dict):
+        errors.append("hub must be an object")
+    else:
+        if hub.get("id") != EXPECTED_HUB_ID:
+            errors.append(f"hub.id must be {EXPECTED_HUB_ID}")
+        if hub.get("availability") != "public":
+            errors.append("hub.availability must remain public")
+        validate_localized_fields(hub, "hub", errors)
+        validate_repository_fields(hub, "hub", errors, public_urls)
 
     projects = catalog.get("projects")
     if not isinstance(projects, list):
@@ -50,59 +112,22 @@ def validate_catalog(catalog: dict[str, Any]) -> list[str]:
     if len(ids) != len(set(ids)):
         errors.append("project ids must be unique")
 
-    public_urls: list[str] = []
     for index, project in enumerate(projects):
         prefix = f"projects[{index}]"
         if not isinstance(project, dict):
             errors.append(f"{prefix} must be an object")
             continue
-        if not project.get("name"):
-            errors.append(f"{prefix}.name is required")
-        for field in ("stage", "role"):
-            localized = project.get(field)
-            if not isinstance(localized, dict) or set(localized) != LANGUAGES:
-                errors.append(f"{prefix}.{field} must contain exactly en and zh-CN")
-
-        availability = project.get("availability")
-        public_url = project.get("public_url")
-        site_url = project.get("site_url")
-        site_label = project.get("site_label")
-        readmes = project.get("readmes")
-        if availability == "public":
-            if not isinstance(public_url, str) or not public_url.startswith("https://github.com/"):
-                errors.append(f"{prefix}.public_url must be a GitHub HTTPS URL")
-            else:
-                public_urls.append(public_url)
-            if not project.get("default_branch"):
-                errors.append(f"{prefix}.default_branch is required for public projects")
-            if not isinstance(readmes, list) or not readmes:
-                errors.append(f"{prefix}.readmes must list public root READMEs")
-            else:
-                for readme in readmes:
-                    if readme.get("language") not in LANGUAGES:
-                        errors.append(f"{prefix}.readmes has an unsupported language")
-                    path = readme.get("path")
-                    if not isinstance(path, str) or Path(path).is_absolute() or ".." in Path(path).parts:
-                        errors.append(f"{prefix}.readmes has an unsafe path")
-            if site_url is not None:
-                if not isinstance(site_url, str) or not site_url.startswith("https://"):
-                    errors.append(f"{prefix}.site_url must be an HTTPS URL")
-                if not isinstance(site_label, str) or not site_label.strip():
-                    errors.append(f"{prefix}.site_label is required when site_url is set")
-            elif site_label is not None:
-                errors.append(f"{prefix}.site_label requires site_url")
-        elif availability == "coming_soon":
-            if public_url is not None or site_url is not None or site_label is not None:
-                errors.append(f"{prefix} coming-soon project must not expose a URL")
-            if project.get("default_branch") is not None or readmes != []:
-                errors.append(f"{prefix} coming-soon project must not expose repository metadata")
-        else:
-            errors.append(f"{prefix}.availability must be public or coming_soon")
+        validate_localized_fields(project, prefix, errors)
+        validate_repository_fields(project, prefix, errors, public_urls)
 
     if len(public_urls) != len(set(public_urls)):
         errors.append("public project URLs must be unique")
 
     return errors
+
+
+def render_entries(catalog: dict[str, Any]) -> list[dict[str, Any]]:
+    return [catalog["hub"], *catalog["projects"]]
 
 
 def render_snippet(catalog: dict[str, Any], language: str) -> str:
@@ -112,9 +137,9 @@ def render_snippet(catalog: dict[str, Any], language: str) -> str:
     if language == "en":
         heading = "## Android performance ecosystem"
         intro = (
-            "This repository is one part of the "
-            "[Android Performance Ecosystem](https://github.com/Gracker/android-performance-ecosystem): "
-            "an optional path from instrumentation and capture to analysis, system knowledge, and reproducible cases."
+            "The [Android Performance Ecosystem](https://github.com/Gracker/android-performance-ecosystem) "
+            "brings its navigation Hub and seven core projects into an optional path from instrumentation and "
+            "capture to analysis, system knowledge, and reproducible cases."
         )
         headers = ("Stage", "Project", "Purpose", "Address")
         coming_soon = "**Coming soon**"
@@ -122,8 +147,8 @@ def render_snippet(catalog: dict[str, Any], language: str) -> str:
     else:
         heading = "## Android 性能分析生态"
         intro = (
-            "本仓库属于 [Android Performance Ecosystem](https://github.com/Gracker/android-performance-ecosystem)："
-            "它把可选插桩、采集、分析、系统知识与可复现案例连接成一套完整路径。"
+            "[Android Performance Ecosystem](https://github.com/Gracker/android-performance-ecosystem) "
+            "通过导航 Hub 与七个核心项目，把可选插桩、采集、分析、系统知识与可复现案例连接成一套完整路径。"
         )
         headers = ("阶段", "项目", "作用", "地址")
         coming_soon = "**Coming soon**"
@@ -138,7 +163,7 @@ def render_snippet(catalog: dict[str, Any], language: str) -> str:
         f"| {headers[0]} | {headers[1]} | {headers[2]} | {headers[3]} |",
         "| --- | --- | --- | --- |",
     ]
-    for project in catalog["projects"]:
+    for project in render_entries(catalog):
         url = project["public_url"]
         name = project["name"]
         project_cell = f"[{name}]({url})" if url else name
@@ -182,7 +207,7 @@ def check_readme_text(text: str, expected: str, label: str) -> list[str]:
 
 
 def public_targets(catalog: dict[str, Any]):
-    for project in catalog["projects"]:
+    for project in render_entries(catalog):
         if project["availability"] != "public":
             continue
         owner, repo = project["public_url"].removeprefix("https://github.com/").split("/", 1)

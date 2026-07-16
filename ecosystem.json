@@ -3,6 +3,26 @@
   "name": "Android Performance Ecosystem",
   "public_url": "https://github.com/Gracker/android-performance-ecosystem",
   "official_affiliation": false,
+  "hub": {
+    "id": "android-performance-ecosystem",
+    "name": "Android Performance Ecosystem",
+    "stage": {
+      "en": "Navigate",
+      "zh-CN": "导航"
+    },
+    "role": {
+      "en": "Maintain the shared project map, handoff metadata, generated README navigation, and drift checks.",
+      "zh-CN": "维护统一项目地图、交接元数据、README 导航区块与漂移检查。"
+    },
+    "public_url": "https://github.com/Gracker/android-performance-ecosystem",
+    "site_url": null,
+    "availability": "public",
+    "default_branch": "main",
+    "readmes": [
+      { "path": "README.md", "language": "en" },
+      { "path": "README.zh-CN.md", "language": "zh-CN" }
+    ]
+  },
   "projects": [
     {
       "id": "tracefix",
@@ -40,7 +60,8 @@
       "availability": "public",
       "default_branch": "main",
       "readmes": [
-        { "path": "README.md", "language": "en" }
+        { "path": "README.md", "language": "en" },
+        { "path": "README.zh-CN.md", "language": "zh-CN" }
       ]
     },
     {

@@ -11,11 +11,35 @@ class EcosystemTest(unittest.TestCase):
     def test_catalog_is_valid(self):
         self.assertEqual([], ecosystem.validate_catalog(self.catalog))
 
-    def test_each_language_renders_seven_projects(self):
+    def test_hub_is_separate_from_seven_core_projects(self):
+        self.assertEqual("android-performance-ecosystem", self.catalog["hub"]["id"])
+        self.assertEqual(7, len(self.catalog["projects"]))
+        self.assertNotIn(
+            self.catalog["hub"]["id"],
+            {project["id"] for project in self.catalog["projects"]},
+        )
+
+    def test_each_language_renders_hub_and_seven_projects(self):
         for language in ecosystem.LANGUAGES:
             snippet = ecosystem.render_snippet(self.catalog, language)
             rows = [line for line in snippet.splitlines() if line.startswith("| ")]
-            self.assertEqual(9, len(rows))  # header + divider + seven project rows
+            self.assertEqual(10, len(rows))  # header + divider + hub + seven project rows
+            self.assertIn("[Android Performance Ecosystem]", rows[2])
+
+    def test_public_targets_include_both_hub_and_perfetto_tools_readmes(self):
+        targets = list(ecosystem.public_targets(self.catalog))
+        paths_by_repo = {}
+        for target in targets:
+            paths_by_repo.setdefault(target["repo"], set()).add(target["path"])
+
+        self.assertEqual(
+            {"README.md", "README.zh-CN.md"},
+            paths_by_repo["android-performance-ecosystem"],
+        )
+        self.assertEqual(
+            {"README.md", "README.zh-CN.md"},
+            paths_by_repo["perfetto-tools"],
+        )
 
     def test_private_project_exposes_no_repository_metadata(self):
         project = next(item for item in self.catalog["projects"] if item["id"] == "android-internal-wiki")
