@@ -1,3 +1,4 @@
+import copy
 import unittest
 
 from scripts import ecosystem
@@ -42,15 +43,31 @@ class EcosystemTest(unittest.TestCase):
         )
 
     def test_private_project_exposes_no_repository_metadata(self):
-        project = next(item for item in self.catalog["projects"] if item["id"] == "android-internal-wiki")
+        catalog = copy.deepcopy(self.catalog)
+        project = next(item for item in catalog["projects"] if item["id"] == "android-internal-wiki")
+        project.update(public_url=None, default_branch=None, availability="coming_soon", readmes=[])
+        self.assertEqual([], ecosystem.validate_catalog(catalog))
         self.assertIsNone(project["public_url"])
         self.assertIsNone(project["default_branch"])
         self.assertEqual([], project["readmes"])
         for language in ecosystem.LANGUAGES:
-            snippet = ecosystem.render_snippet(self.catalog, language)
+            snippet = ecosystem.render_snippet(catalog, language)
             self.assertIn("Coming soon", snippet)
             self.assertIn("| Android Internal Wiki |", snippet)
             self.assertNotIn("[Android Internal Wiki](", snippet)
+
+        project["public_url"] = "https://github.com/example/non-public-project"
+        self.assertTrue(ecosystem.validate_catalog(catalog))
+
+    def test_public_wiki_targets_use_its_default_branch_and_readme_languages(self):
+        targets = [
+            target for target in ecosystem.public_targets(self.catalog)
+            if target["repo"] == "android-internals-wiki"
+        ]
+        self.assertEqual(
+            {("master", "README.md", "zh-CN"), ("master", "README.en.md", "en")},
+            {(target["branch"], target["path"], target["language"]) for target in targets},
+        )
 
     def test_blog_uses_its_named_site_as_the_primary_address(self):
         project = next(

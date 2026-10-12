@@ -136,11 +136,14 @@
         "en": "An alpha knowledge base for Android mechanisms from App to Framework, Native, and Kernel.",
         "zh-CN": "处于 alpha 阶段的 Android 系统知识库，覆盖 App、Framework、Native 与 Kernel 机制。"
       },
-      "public_url": null,
+      "public_url": "https://github.com/Gracker/android-internals-wiki",
       "site_url": null,
-      "availability": "coming_soon",
-      "default_branch": null,
-      "readmes": []
+      "availability": "public",
+      "default_branch": "master",
+      "readmes": [
+        { "path": "README.md", "language": "zh-CN" },
+        { "path": "README.en.md", "language": "en" }
+      ]
     },
     {
       "id": "trace-for-blog",

@@ -4,8 +4,8 @@
 
 | 优先级 | 缺口 | 已采取的改进 | 下一验收条件 | 状态 |
 | --- | --- | --- | --- | --- |
-| P0 | 七个入口彼此独立，用户不知道从哪里开始 | 新建 Hub、统一中英文 README 表格，并给出可选端到端路径 | 六个公开仓远端 README 检查持续通过，私有 AIW 本地检查通过 | 已完成首版 |
-| P0 | 重复表格容易漂移或泄露私有地址 | 用 `ecosystem.json` 生成 marker block；CI 只读检查公开仓；AIW 只输出 `Coming soon` | 周期 CI 通过且公开文件不含私有仓库元数据 | 已完成首版 |
+| P0 | 七个入口彼此独立，用户不知道从哪里开始 | 新建 Hub、统一中英文 README 表格，并给出可选端到端路径 | Hub 与七个公开项目的远端 README 检查持续通过 | 已完成首版 |
+| P0 | 重复表格容易漂移或泄露私有地址 | 用 `ecosystem.json` 生成 marker block；CI 只读检查公开仓；AIW 已公开并纳入检查，非公开项目只输出 `Coming soon` | 周期 CI 通过且公开文件不含私有仓库元数据 | 已完成首版 |
 | P0 | 博客案例 Trace 只有文件，没有可审计元数据 | 为 SystraceForBlog 增加目录、哈希、来源、授权、隐私和压缩包边界校验 | 15 个既有 artifact 全部被 catalog 覆盖；未知项显式为 `null` / `pending` | 已完成首版，历史元数据待补 |
 | P1 | 采集、分析、Skill、文章之间缺少稳定 case ID | 先在 Hub 和案例仓定义相同的 case/provenance 约束 | 至少一个 demo 用同一 case ID 连接抓取配置、Trace、期望证据、Skill 与文章 | 待实现 |
 | P1 | 跨仓兼容性只在各自 CI 内验证 | 保留 SmartPerfetto corpus 与 Perfetto-Skills fixture 的独立职责，不再创建第三套重复语料 | 同一公开小型 fixture 能通过 Perfetto Tools 输出、SmartPerfetto 导入与 Perfetto Skills smoke | 待实现 |
